@@ -1,0 +1,21 @@
+version: "3.8"
+
+services:
+  mysql_db:
+    container_name: blind-local-db
+    image: mysql:8.0
+    restart: unless-stopped
+    volumes:
+      - mysql_db:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=rootpassword
+      - MYSQL_DATABASE=blind
+      - MYSQL_USER=blind
+      - MYSQL_PASSWORD=blind
+    ports:
+      - "3306:3306"
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+volumes:
+  mysql_db:
