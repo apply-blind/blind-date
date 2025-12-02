@@ -25,41 +25,52 @@ repositories {
 }
 
 dependencies {
-    // Developer Tools
+    // ===== 개발 도구 (Developer Tools) =====
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 
-    // Web
+    // ===== Spring Boot 코어 (Spring Boot Core) =====
     implementation 'org.springframework.boot:spring-boot-starter-web'
 
-    // SQL
+    // Security
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+
+    // Validation: Bean Validation
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    // ===== 데이터베이스 - 관계형 (Database - Relational) =====
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     runtimeOnly 'com.mysql:mysql-connector-j'
 
+    // Flyway: DB 스키마 버전 관리 및 마이그레이션
     implementation 'org.flywaydb:flyway-core'
     implementation 'org.flywaydb:flyway-mysql'
 
-    // I/O
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
-
-    // NoSQL
+    // ===== 데이터베이스 - NoSQL (Database - NoSQL) =====
+    // Redis: SSE Emitter 세션 관리, Pub/Sub (실시간 알림)
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
-    // UUID v7 생성
-    implementation 'com.fasterxml.uuid:java-uuid-generator:5.1.1'
-
-    // JWT
+    // ===== 인증/보안 (Authentication & Security) =====
+    // JWT: Access Token/Refresh Token 생성 및 검증 (Token Rotation)
     implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.6'
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.6'
 
-    // .env 파일 지원
+    // ===== 외부 인프라 (External Infrastructure) =====
+    implementation platform('software.amazon.awssdk:bom:2.29.45')
+    implementation 'software.amazon.awssdk:s3'
+
+    // ===== 유틸리티 (Utilities) =====
+    // UUID v7 Generator
+    implementation 'com.fasterxml.uuid:java-uuid-generator:5.1.1'
+
+    // Spring Dotenv: .env 파일 환경 변수 로딩 (로컬 개발용)
     implementation 'me.paulschwarz:spring-dotenv:4.0.0'
 
-    // Swagger/OpenAPI
+    // ===== API 문서화 (API Documentation) =====
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.4'
 
-    // Test
+    // ===== 테스트 (Testing) =====
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }

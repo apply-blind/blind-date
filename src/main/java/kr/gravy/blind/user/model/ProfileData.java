@@ -10,7 +10,7 @@ import java.util.List;
  * Domain Layer의 Parameter Object Pattern 구현
  * 목적:
  * - Entity가 DTO에 의존하지 않도록 분리 (Clean Architecture)
- * - 19개 파라미터를 하나의 객체로 그룹화 (Clean Code - Parameter Object Pattern)
+ * - 20개 파라미터를 하나의 객체로 그룹화 (Clean Code - Parameter Object Pattern)
  * - 컴파일 타임 안정성 보장 (Record의 canonical constructor)
  *
  * 검증 전략:
