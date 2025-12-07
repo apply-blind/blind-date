@@ -9,7 +9,8 @@ import org.springframework.context.annotation.Configuration;
         KakaoProperties.class,
         BlindProperties.class,
         S3Properties.class,
-        CorsProperties.class
+        CorsProperties.class,
+        HmacProperties.class
 })
 public class PropertiesConfiguration {
 }
