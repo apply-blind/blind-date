@@ -27,6 +27,7 @@ import static kr.gravy.blind.common.exception.Status.*;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class ProfileQueryService {
 
     private final UserProfileRepository userProfileRepository;
@@ -38,7 +39,6 @@ public class ProfileQueryService {
     /**
      * 현재 사용자 정보 조회
      */
-    @Transactional(readOnly = true)
     public MyInfoDto.Response getUserBasicInfo(User user) {
         UserProfile userProfile = userProfileRepository
                 .findByUserId(user.getId())
@@ -54,7 +54,6 @@ public class ProfileQueryService {
      * 내 프로필 전체 정보 조회
      * 프로필 수정 시 기존 데이터 로드용
      */
-    @Transactional(readOnly = true)
     public UserProfileDto.Response getUserProfileDetails(User user) {
         return switch (user.getStatus()) {
             case APPROVED -> {
@@ -130,7 +129,6 @@ public class ProfileQueryService {
      * 닉네임 사용 가능 여부 확인
      * 자기 자신을 제외하고 중복 체크
      */
-    @Transactional(readOnly = true)
     public NicknameCheckDto.Response checkNickname(String nickname, Long currentUserId) {
         boolean isDuplicate = userProfileRepository
                 .existsByNicknameAndUserIdNot(nickname, currentUserId);

@@ -27,6 +27,7 @@ import static kr.gravy.blind.common.exception.Status.USER_NOT_FOUND;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class NotificationService {
 
     private final NotificationRepository notificationRepository;
@@ -187,7 +188,6 @@ public class NotificationService {
      * @param pageable     페이징 정보
      * @return 알림 목록
      */
-    @Transactional(readOnly = true)
     public Page<GetNotificationsDto.Response> getNotifications(UUID userPublicId, Pageable pageable) {
         Page<Notification> notifications = notificationRepository
                 .findByUserPublicIdOrderByCreatedAtDesc(userPublicId, pageable);
@@ -201,7 +201,6 @@ public class NotificationService {
      * @param userPublicId 사용자 Public ID
      * @return 읽지 않은 알림 개수
      */
-    @Transactional(readOnly = true)
     public int getUnreadCount(UUID userPublicId) {
         return notificationRepository.countByUserPublicIdAndIsReadFalse(userPublicId);
     }
