@@ -150,7 +150,7 @@ public class AdminService {
                 .orElseThrow(() -> new BlindException(USER_NOT_FOUND));
 
         // 2. 심사 대기 상태 검증
-        if (user.getStatus() != UserStatus.UNDER_REVIEW) {
+        if (!user.isUnderReview()) {
             throw new BlindException(INVALID_REVIEW_STATUS);
         }
 

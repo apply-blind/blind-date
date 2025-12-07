@@ -40,8 +40,34 @@ application-local.yml
 application-dev.yml
 .env
 
+### AWS CDK
+cdk.out/
+.cdk.staging/
+cdk.context.json
+
 #ignore
 .gitattributes
 
+### Application logs
+*.log
+logs/
+
+### Lambda Node.js dependencies
+lambda/**/node_modules/
+# lambda/**/package-lock.json
+lambda/**/.npm/
+
+### OS-specific files
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+### Markdown files
 *.md
 

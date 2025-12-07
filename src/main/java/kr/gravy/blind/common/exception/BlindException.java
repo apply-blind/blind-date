@@ -27,4 +27,12 @@ public class BlindException extends RuntimeException {
         this.code = Status.BAD_REQUEST.getCode();
         this.message = message;
     }
+
+    public BlindException(Status status, Throwable cause) {
+        super(status.name(), cause);
+        this.status = status;
+        this.httpStatusCode = status.getHttpStatusCode();
+        this.code = status.getCode();
+        this.message = status.getMessage();
+    }
 }

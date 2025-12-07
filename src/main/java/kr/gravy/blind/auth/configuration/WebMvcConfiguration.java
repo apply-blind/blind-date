@@ -1,6 +1,7 @@
 package kr.gravy.blind.auth.configuration;
 
 import kr.gravy.blind.auth.resolver.CurrentAdminArgumentResolver;
+import kr.gravy.blind.auth.resolver.CurrentApprovedUserArgumentResolver;
 import kr.gravy.blind.auth.resolver.CurrentUserArgumentResolver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
@@ -15,10 +16,12 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
 
     private final CurrentUserArgumentResolver currentUserArgumentResolver;
     private final CurrentAdminArgumentResolver currentAdminArgumentResolver;
+    private final CurrentApprovedUserArgumentResolver currentApprovedUserArgumentResolver;
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
         resolvers.add(currentUserArgumentResolver);
         resolvers.add(currentAdminArgumentResolver);
+        resolvers.add(currentApprovedUserArgumentResolver);
     }
 }

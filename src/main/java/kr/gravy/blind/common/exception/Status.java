@@ -42,6 +42,7 @@ public enum Status {
     FILE_TOO_LARGE(400, "image003", "파일 크기가 10MB를 초과할 수 없습니다"),
     UNSUPPORTED_FILE_TYPE(400, "image005", "지원하지 않는 파일 형식입니다. JPEG, PNG, GIF, WEBP 형식만 업로드 가능합니다"),
     FILE_EXTENSION_MISMATCH(400, "image006", "파일 확장자와 파일 형식이 일치하지 않습니다"),
+    INVALID_DISPLAY_ORDER(400, "image007", "displayOrder는 1 이상이어야 합니다"),
 
     // === S3 관련 ===
     S3_UPLOAD_FAILED(500, "s3001", "S3 업로드에 실패했습니다"),
@@ -49,7 +50,28 @@ public enum Status {
     INVALID_S3_URL(400, "s3003", "유효하지 않은 S3 URL입니다"),
 
     // === 검증 관련 ===
-    VALIDATION_FAILED(400, "valid001", "입력값 검증에 실패했습니다");
+    VALIDATION_FAILED(400, "valid001", "입력값 검증에 실패했습니다"),
+
+    // === 커뮤니티 관련 ===
+    COMMUNITY_ACCESS_DENIED(403, "community001", "커뮤니티 기능은 승인된 사용자만 이용할 수 있습니다"),
+
+    // === 게시판 관련 ===
+    POST_NOT_FOUND(404, "post001", "게시글을 찾을 수 없습니다"),
+    POST_ALREADY_DELETED(400, "post002", "이미 삭제된 게시글입니다"),
+    POST_AUTHOR_MISMATCH(403, "post003", "작성자만 삭제할 수 있습니다"),
+    CATEGORY_ACCESS_DENIED(403, "post004", "해당 카테고리에 접근할 수 없습니다"),
+
+    // === 댓글 관련 ===
+    COMMENT_NOT_FOUND(404, "comment001", "댓글을 찾을 수 없습니다"),
+    COMMENT_ALREADY_DELETED(400, "comment002", "이미 삭제된 댓글입니다"),
+    COMMENT_AUTHOR_MISMATCH(403, "comment003", "작성자만 삭제할 수 있습니다"),
+    REPLY_TO_REPLY_NOT_ALLOWED(400, "comment004", "대댓글에는 답글을 작성할 수 없습니다"),
+
+    // === 닉네임 생성 관련 ===
+    NICKNAME_GENERATION_FAILED(500, "nickname001", "닉네임 생성에 실패했습니다"),
+
+    // === 알림 관련 ===
+    NOTIFICATION_NOT_FOUND(404, "notification001", "알림을 찾을 수 없습니다");
 
     private final int httpStatusCode;
     private final String code;

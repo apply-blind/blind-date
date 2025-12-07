@@ -18,10 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static kr.gravy.blind.common.exception.Status.IMAGE_NOT_FOUND;
@@ -131,23 +128,37 @@ public class ProfileImageService {
      * @param pendingImages pending 이미지 리스트
      */
     public void updateProfileImages(UserProfile profile, List<UserImagePending> pendingImages) {
-        // 1. EXISTING 이미지 ID 수집 (유지할 이미지)
+        // 1. 기존 이미지 전체 조회
+        List<UserImage> oldImages = userImageRepository.findByUserProfileIdOrderByDisplayOrder(profile.getId());
+
+        // 2. EXISTING 이미지 ID 수집 (유지할 이미지)
         Set<Long> existingImageIds = pendingImages.stream()
                 .map(UserImagePending::getExistingImageId)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
 
-        // 2. 기존 이미지 중 EXISTING에 없는 것만 필터링 (삭제 대상)
-        List<UserImage> oldImages = userImageRepository.findByUserProfileIdOrderByDisplayOrder(profile.getId());
+        // 3. 삭제 대상 이미지 필터링
         List<UserImage> imagesToDelete = oldImages.stream()
                 .filter(img -> !existingImageIds.contains(img.getId()))
-                .collect(Collectors.toList());
+                .toList();
 
-        // 3. NEW 이미지만 UserImage로 변환하여 저장
+        // 4. EXISTING 이미지의 displayOrder 업데이트
+        Map<Long, UserImage> oldImageMap = oldImages.stream()
+                .collect(Collectors.toMap(UserImage::getId, img -> img));
+
+        for (UserImagePending pending : pendingImages) {
+            if (pending.getStatus() == ImageUploadStatus.EXISTING) {
+                UserImage existingImage = oldImageMap.get(pending.getExistingImageId());
+                if (existingImage != null && existingImage.getDisplayOrder() != pending.getDisplayOrder()) {
+                    existingImage.updateDisplayOrder(pending.getDisplayOrder());
+                }
+            }
+        }
+
+        // 5. NEW 이미지 저장
         int newImageCount = 0;
         for (UserImagePending pendingImage : pendingImages) {
             if (pendingImage.getStatus() != ImageUploadStatus.EXISTING) {
-                // NEW 이미지만 저장
                 UserImage image = UserImage.create(
                         profile,
                         pendingImage.getS3Key(),
@@ -159,7 +170,7 @@ public class ProfileImageService {
             }
         }
 
-        // 4. 새 이미지 저장 후, 기존 이미지 삭제
+        // 6. 기존 이미지 삭제
         if (!imagesToDelete.isEmpty()) {
             userImageRepository.deleteAll(imagesToDelete);
 

@@ -17,6 +17,7 @@ public record S3Properties(
         Duration presignedUrlExpiration,
         int minImageCount,
         int maxImageCount,
-        DataSize maxFileSize
+        DataSize maxFileSize,
+        String cloudFrontDomain  // CDN 도메인 (예: d111111abcdef8.cloudfront.net)
 ) {
 }

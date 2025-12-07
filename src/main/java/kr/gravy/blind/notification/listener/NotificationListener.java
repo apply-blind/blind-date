@@ -24,6 +24,8 @@ public class NotificationListener implements MessageListener {
 
     /**
      * Redis 메시지 수신 및 SSE 전송
+     * - userPublicId가 null이면 브로드캐스트
+     * - userPublicId가 있으면 1:1 전송
      *
      * @param message Redis 메시지 (NotificationDto JSON)
      * @param pattern Redis 패턴
@@ -37,8 +39,13 @@ public class NotificationListener implements MessageListener {
             // JSON → NotificationDto 역직렬화
             NotificationDto notification = objectMapper.readValue(json, NotificationDto.class);
 
-            // SSE 전송 (현재 인스턴스에 연결된 사용자에게만)
-            sseEmitterService.send(notification.userPublicId(), notification);
+            // userPublicId가 null이면 브로드캐스트 (연결된 모든 사용자에게)
+            if (notification.userPublicId() == null) {
+                sseEmitterService.broadcast(notification);
+            } else {
+                // 특정 사용자 알림 (1:1)
+                sseEmitterService.send(notification.userPublicId(), notification);
+            }
 
         } catch (Exception e) {
             log.error("Redis 메시지 처리 실패 - message: {}", new String(message.getBody()), e);

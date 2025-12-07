@@ -1,9 +1,10 @@
 package kr.gravy.blind.infrastructure.aws;
 
 import kr.gravy.blind.common.exception.BlindException;
+import kr.gravy.blind.common.type.ImageContentType;
+import kr.gravy.blind.common.type.ImageSize;
 import kr.gravy.blind.common.utils.GeneratorUtil;
 import kr.gravy.blind.configuration.properties.S3Properties;
-import kr.gravy.blind.user.model.ImageContentType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -58,12 +59,36 @@ public class S3Service {
     }
 
     /**
+     * CDN(CloudFront)을 통한 이미지 URL을 생성
+     *
+     * @param s3Key S3 객체 키
+     * @param size  이미지 크기 (THUMBNAIL, MEDIUM, FULL)
+     * @return CloudFront CDN URL (예: https://d111111abcdef8.cloudfront.net/images/profile/uuid.jpg?width=200&format=auto)
+     */
+    public String getCdnImageUrl(String s3Key, ImageSize size) {
+        if (s3Key == null || s3Key.isBlank()) {
+            log.warn("CDN URL 생성 요청 키가 null 또는 빈 문자열입니다");
+            throw new BlindException(INVALID_S3_URL);
+        }
+
+        if (s3Properties.cloudFrontDomain() == null || s3Properties.cloudFrontDomain().isBlank()) {
+            log.error("CloudFront 도메인이 설정되지 않았습니다 (application.yml 확인)");
+            throw new BlindException(S3_UPLOAD_FAILED);
+        }
+
+        // OOP 캡슐화: ImageSize가 직접 URL 생성 (Tell, Don't Ask 원칙)
+        return size.buildCdnUrl(s3Properties.cloudFrontDomain(), s3Key);
+    }
+
+    /**
      * S3 파일에 대한 GET Presigned URL을 생성합니다. (다운로드용)
      * 시간 제한된 임시 URL로 보안을 강화합니다.
      *
      * @param s3Key S3 객체 키
      * @return 시간 제한된 Presigned URL (24시간)
+     * @deprecated CDN 사용 권장 ({@link #getCdnImageUrl(String, ImageSize)}). Pending 이미지에만 사용하세요.
      */
+    @Deprecated(since = "2025-12-07")
     public String generatePresignedUrl(String s3Key) {
         if (s3Key == null || s3Key.isBlank()) {
             log.warn("Presigned URL 생성 요청 키가 null 또는 빈 문자열입니다");
@@ -134,7 +159,7 @@ public class S3Service {
      */
     public String generateS3Key(String originalFilename, String contentType) {
         log.debug("🔍 [S3Service] S3 Key 생성 시작 - filename: '{}', contentType: '{}'",
-            originalFilename, contentType);
+                originalFilename, contentType);
 
         // 1. Content-Type 화이트리스트 검증
         ImageContentType imageType = ImageContentType.fromMimeType(contentType);
@@ -142,7 +167,7 @@ public class S3Service {
         // 2. 확장자와 Content-Type 일치 검증 (보안)
         if (!imageType.hasValidExtension(originalFilename)) {
             log.error("[S3Service] 확장자 불일치 - filename: '{}', expected: '{}', contentType: '{}'",
-                originalFilename, imageType.getExtension(), contentType);
+                    originalFilename, imageType.getExtension(), contentType);
             throw new BlindException(FILE_EXTENSION_MISMATCH);
         }
 

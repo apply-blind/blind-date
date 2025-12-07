@@ -108,7 +108,7 @@ public class ProfileReviewService {
      */
     @Transactional
     public void rejectProfile(User user, String reason) {
-        if (user.getStatus() != UserStatus.UNDER_REVIEW) {
+        if (!user.isUnderReview()) {
             throw new BlindException(INVALID_REVIEW_STATUS);
         }
 
@@ -122,7 +122,6 @@ public class ProfileReviewService {
 
         userImagePendingRepository.deleteAll(pendingImages);
 
-        // 🔥 Critical Fix: EXISTING 이미지는 승인 프로필 참조 → S3 삭제 제외
         // NEW 이미지만 S3 삭제 대상
         if (!pendingImages.isEmpty()) {
             List<String> s3KeysToDelete = pendingImages.stream()

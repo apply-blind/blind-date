@@ -108,4 +108,35 @@ public class User extends BaseEntity {
             );
         }
     }
+
+    /**
+     * 커뮤니티 기능 접근 가능 여부 확인
+     * - 익명 게시판은 APPROVED 사용자만 접근 가능
+     * - @CurrentApprovedUser ArgumentResolver에서 사용
+     *
+     * @return 커뮤니티 접근 가능 여부
+     */
+    public boolean hasAccessToCommunity() {
+        return this.status == UserStatus.APPROVED;
+    }
+
+    public boolean isBanned() {
+        return this.status == UserStatus.BANNED;
+    }
+
+    public boolean isUnderReview() {
+        return this.status == UserStatus.UNDER_REVIEW;
+    }
+
+    public boolean isApproved() {
+        return this.status == UserStatus.APPROVED;
+    }
+
+    public boolean isRejected() {
+        return this.status == UserStatus.REJECTED;
+    }
+
+    public boolean isProfileWriting() {
+        return this.status == UserStatus.PROFILE_WRITING;
+    }
 }

@@ -1,5 +1,6 @@
-package kr.gravy.blind.user.model;
+package kr.gravy.blind.common.type;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import kr.gravy.blind.common.exception.BlindException;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -29,13 +30,15 @@ public enum ImageContentType {
 
     /**
      * MIME type으로 ImageContentType 찾기
+     * Jackson 역직렬화 시 사용됨 (@JsonCreator)
      *
      * @param mimeType MIME 타입 (예: "image/jpeg")
      * @return ImageContentType
      * @throws BlindException 지원하지 않는 파일 타입인 경우
      */
+    @JsonCreator
     public static ImageContentType fromMimeType(String mimeType) {
-        log.debug("🔍 [ImageContentType] 검증 시작 - mimeType: '{}'", mimeType);
+        log.debug("[ImageContentType] 검증 시작 - mimeType: '{}'", mimeType);
         for (ImageContentType type : values()) {
             if (type.mimeType.equals(mimeType)) {
                 return type;
