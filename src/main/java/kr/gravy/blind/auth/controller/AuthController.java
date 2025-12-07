@@ -1,5 +1,7 @@
 package kr.gravy.blind.auth.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import kr.gravy.blind.auth.dto.AuthTokenDto;
 import kr.gravy.blind.auth.dto.LoginRequest;
@@ -13,9 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-/**
- * 인증 관련 API
- */
+@Tag(name = "인증", description = "로그인, 로그아웃, 토큰 갱신 API")
 @RestController
 @RequiredArgsConstructor
 public class AuthController {
@@ -23,12 +23,7 @@ public class AuthController {
     private final AuthService authService;
     private final CookieUtil cookieUtil;
 
-    /**
-     * 로그인 (토큰 생성)
-     *
-     * @param request Authorization Code를 담은 요청
-     * @return HTTP 200 OK (쿠키에 JWT 포함)
-     */
+    @Operation(summary = "로그인", description = "카카오 OAuth2 인증 후 JWT 발급")
     @PostMapping("/api/v1/auth/tokens")
     public ResponseEntity<Void> login(@Valid @RequestBody LoginRequest request) {
         // 1. 로그인 처리 및 JWT 생성 (현재는 카카오만)
@@ -46,12 +41,7 @@ public class AuthController {
                 .build();
     }
 
-    /**
-     * 토큰 갱신
-     *
-     * @param refreshToken 쿠키에서 추출한 Refresh Token
-     * @return HTTP 200 OK (쿠키에 새로운 JWT 포함)
-     */
+    @Operation(summary = "토큰 갱신", description = "Refresh Token으로 새 Access/Refresh Token 발급")
     @PutMapping("/api/v1/auth/tokens")
     public ResponseEntity<Void> refreshTokens(
             @CookieValue(name = CookieUtil.REFRESH_COOKIE) String refreshToken) {
@@ -68,13 +58,7 @@ public class AuthController {
                 .build();
     }
 
-    /**
-     * 로그아웃 (토큰 삭제)
-     * Access Token으로 인증된 사용자의 모든 활성 Refresh Token을 무효화하고 쿠키를 삭제
-     *
-     * @param user Access Token으로 인증된 사용자
-     * @return HTTP 200 OK (쿠키 삭제)
-     */
+    @Operation(summary = "로그아웃", description = "Refresh Token 무효화 및 쿠키 삭제")
     @DeleteMapping("/api/v1/auth/tokens")
     public ResponseEntity<Void> logout(@AuthenticationPrincipal User user) {
         // 1. DB에서 모든 Refresh Token 무효화
