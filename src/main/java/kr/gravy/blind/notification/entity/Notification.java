@@ -2,6 +2,7 @@ package kr.gravy.blind.notification.entity;
 
 import jakarta.persistence.*;
 import kr.gravy.blind.common.BaseEntity;
+import kr.gravy.blind.notification.model.NotificationType;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,6 +30,25 @@ public abstract class Notification extends BaseEntity {
 
     @Column(name = "is_read", nullable = false)
     protected boolean isRead;
+
+    @Column(name = "post_public_id")
+    protected UUID postPublicId;
+
+    @Column(name = "post_title", length = 200)
+    protected String postTitle;
+
+    @Column(name = "comment_content", columnDefinition = "TEXT")
+    protected String commentContent;
+
+    @Column(name = "comment_public_id")
+    protected UUID commentPublicId;
+
+    /**
+     * 알림 타입 반환
+     *
+     * @return NotificationType
+     */
+    public abstract NotificationType getType();
 
     /**
      * 알림 읽음 처리

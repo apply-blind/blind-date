@@ -10,10 +10,10 @@ public final class SseConstants {
     }
 
     /**
-     * SSE 타임아웃 (무제한)
-     * Heartbeat로 연결 관리
+     * SSE 타임아웃 (5분)
+     * - 클라이언트 비정상 종료 시 자동 정리
      */
-    public static final Long INFINITE_TIMEOUT = 0L;
+    public static final Long DEFAULT_TIMEOUT = 5 * 60 * 1000L;  // 5분 (밀리초)
 
     /**
      * Heartbeat 전송 간격 (밀리초)
@@ -23,6 +23,7 @@ public final class SseConstants {
 
     /**
      * 세션 만료 메시지
+     * TODO:: 추후 단일 디바이스만 허용할 예정
      */
     public static final String SESSION_EXPIRED_MESSAGE = "다른 곳에서 로그인되었습니다.";
 }
