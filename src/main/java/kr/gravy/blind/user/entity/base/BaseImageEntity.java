@@ -5,12 +5,15 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.MappedSuperclass;
 import kr.gravy.blind.common.BaseEntity;
+import kr.gravy.blind.common.exception.BlindException;
 import kr.gravy.blind.user.model.ImageUploadStatus;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.UUID;
+
+import static kr.gravy.blind.common.exception.Status.INVALID_DISPLAY_ORDER;
 
 /**
  * 이미지 공통 필드 추상 클래스
@@ -49,5 +52,12 @@ public abstract class BaseImageEntity extends BaseEntity {
      */
     public void updateStatus(ImageUploadStatus status) {
         this.status = status;
+    }
+
+    public void updateDisplayOrder(int newDisplayOrder) {
+        if (newDisplayOrder < 1) {
+            throw new BlindException(INVALID_DISPLAY_ORDER);
+        }
+        this.displayOrder = newDisplayOrder;
     }
 }
