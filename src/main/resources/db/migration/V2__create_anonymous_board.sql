@@ -65,19 +65,19 @@ CREATE TABLE anonymous_comments
     user_id            BIGINT      NOT NULL COMMENT '작성자 ID',
     author_gender      VARCHAR(10) NOT NULL COMMENT '작성자 성별 (MALE, FEMALE)',
     anonymous_nickname VARCHAR(50) NOT NULL COMMENT 'HMAC 기반 익명 닉네임 (게시글별 고정)',
-    parent_comment_id  BIGINT NULL     COMMENT 'Self-Referencing: NULL이면 최상위 댓글, NOT NULL이면 대댓글',
+    parent_comment_id  BIGINT NULL COMMENT 'Self-Referencing: NULL이면 최상위 댓글, NOT NULL이면 대댓글',
     content            TEXT        NOT NULL COMMENT '댓글 내용',
     like_count         INT         NOT NULL COMMENT '좋아요 수 (비정규화, 읽기 성능 최적화)',
     status             VARCHAR(20) NOT NULL COMMENT '댓글 상태 (ACTIVE: 활성, DELETED: 삭제)',
     created_at         DATETIME    NOT NULL COMMENT '생성 시각',
-    updated_at         DATETIME    NOT NULL COMMENT '수정 시각'
-);
+    updated_at         DATETIME    NOT NULL COMMENT '수정 시각',
 
-CREATE INDEX idx_comments_public_id ON anonymous_comments (public_id);
-CREATE INDEX idx_comments_post_id_parent_null ON anonymous_comments (post_id, parent_comment_id, created_at ASC);
-CREATE INDEX idx_comments_parent_id ON anonymous_comments (parent_comment_id, created_at ASC);
-CREATE INDEX idx_comments_user_id ON anonymous_comments (user_id, created_at DESC);
-CREATE INDEX idx_comments_post_nickname_status ON anonymous_comments (post_id, anonymous_nickname, status);
+    INDEX              idx_comments_public_id (public_id),
+    INDEX              idx_comments_post_id_parent_null (post_id, parent_comment_id, created_at ASC),
+    INDEX              idx_comments_parent_id (parent_comment_id, created_at ASC),
+    INDEX              idx_comments_user_id (user_id, created_at DESC),
+    INDEX              idx_comments_post_nickname_status (post_id, anonymous_nickname, status)
+);
 
 
 CREATE TABLE anonymous_comment_likes
@@ -88,10 +88,10 @@ CREATE TABLE anonymous_comment_likes
     created_at DATETIME NOT NULL COMMENT '생성 시각',
     updated_at DATETIME NOT NULL COMMENT '수정 시각',
 
-    CONSTRAINT uq_comment_likes_user_comment UNIQUE (user_id, comment_id)
-);
+    CONSTRAINT uq_comment_likes_user_comment UNIQUE (user_id, comment_id),
 
-CREATE INDEX idx_comment_likes_comment_id ON anonymous_comment_likes (comment_id);
+    INDEX      idx_comment_likes_comment_id (comment_id)
+);
 
 ALTER TABLE notifications
     ADD COLUMN post_public_id BINARY(16) NULL COMMENT '게시글 Public ID',
