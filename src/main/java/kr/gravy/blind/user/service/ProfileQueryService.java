@@ -1,6 +1,7 @@
 package kr.gravy.blind.user.service;
 
 import kr.gravy.blind.common.exception.BlindException;
+import kr.gravy.blind.common.type.ImageSize;
 import kr.gravy.blind.infrastructure.aws.S3Service;
 import kr.gravy.blind.user.dto.MyInfoDto;
 import kr.gravy.blind.user.dto.NicknameCheckDto;
@@ -94,7 +95,7 @@ public class ProfileQueryService {
         List<UserProfileDto.Response.ImageInfo> presignedImages = userImages.stream()
                 .map(image -> new UserProfileDto.Response.ImageInfo(
                         image.getPublicId(),
-                        s3Service.generatePresignedUrl(image.getS3Key()),
+                        s3Service.getCdnImageUrl(image.getS3Key(), ImageSize.MEDIUM),
                         image.getDisplayOrder()
                 ))
                 .toList();

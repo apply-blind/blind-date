@@ -75,13 +75,12 @@ public class ProfileSubmissionService {
             }
 
             // APPROVED 사용자가 수정 요청 시 기존 pending 이미지 삭제
-            if (user.getStatus() == UserStatus.APPROVED) {
+            if (user.isApproved()) {
                 List<UserImagePending> oldPendingImages = userImagePendingRepository
                         .findByUserProfilePendingIdOrderByDisplayOrder(pending.getId());
                 if (!oldPendingImages.isEmpty()) {
                     userImagePendingRepository.deleteAll(oldPendingImages);
 
-                    // 🔥 Critical Fix: EXISTING 이미지는 승인 프로필 참조 → S3 삭제 제외
                     // NEW 이미지만 S3 삭제 대상
                     List<String> s3KeysToDelete = oldPendingImages.stream()
                             .filter(image -> image.getStatus() != ImageUploadStatus.EXISTING)
@@ -156,7 +155,7 @@ public class ProfileSubmissionService {
 
         // 5. 상태 변경 (REJECTED, APPROVED → UNDER_REVIEW)
         // hasBaseProfile로 최초/수정 구분 가능하므로 APPROVED도 변경
-        if (user.getStatus() == UserStatus.REJECTED || user.getStatus() == UserStatus.APPROVED) {
+        if (user.isRejected() || user.isApproved()) {
             user.updateStatus(UserStatus.UNDER_REVIEW);
         }
 

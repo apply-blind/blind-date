@@ -2,6 +2,8 @@ package kr.gravy.blind.user.controller;
 
 import jakarta.validation.Valid;
 import kr.gravy.blind.auth.annotation.CurrentUser;
+import kr.gravy.blind.board.dto.GetListPostDto;
+import kr.gravy.blind.board.service.PostService;
 import kr.gravy.blind.user.dto.MyInfoDto;
 import kr.gravy.blind.user.dto.NicknameCheckDto;
 import kr.gravy.blind.user.dto.ProfileUpdateDto;
@@ -9,6 +11,8 @@ import kr.gravy.blind.user.dto.UserProfileDto;
 import kr.gravy.blind.user.entity.User;
 import kr.gravy.blind.user.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,10 +22,7 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final UserService userService;
-
-    // ====================================================================
-    // 조회 API
-    // ====================================================================
+    private final PostService postService;
 
     /**
      * 현재 로그인한 사용자 정보 조회 API
@@ -41,6 +42,17 @@ public class UserController {
     public ResponseEntity<UserProfileDto.Response> getMyProfile(
             @CurrentUser User user) {
         UserProfileDto.Response response = userService.getMyProfile(user);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    /**
+     * 내가 작성한 게시글 목록 조회 API
+     */
+    @GetMapping("/api/v1/users/me/posts")
+    public ResponseEntity<GetListPostDto.PageResponse> getMyPosts(
+            @CurrentUser User user,
+            @PageableDefault(size = 20, sort = "createdAt") Pageable pageable) {
+        GetListPostDto.PageResponse response = postService.getMyPosts(user, pageable);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
