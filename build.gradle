@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.5.8'
     id 'io.spring.dependency-management' version '1.1.7'
+    id 'application'  // CDK 실행용
 }
 
 group = 'kr.gravy'
@@ -12,6 +13,26 @@ java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(17)
     }
+}
+
+// Application plugin: CDK 전용 설정
+application {
+    mainClass = 'kr.gravy.blind.cdk.BlindInfraApp'
+}
+
+// Gradle run 태스크: CDK 출력용 stdout 연결
+tasks.named('run') {
+    standardOutput = System.out
+    errorOutput = System.err
+}
+
+// Spring Boot: 메인 클래스 명시적 설정 (BlindApplication)
+tasks.named('bootJar') {
+    mainClass = 'kr.gravy.blind.BlindApplication'
+}
+
+tasks.named('bootRun') {
+    mainClass = 'kr.gravy.blind.BlindApplication'
 }
 
 configurations {
@@ -57,8 +78,13 @@ dependencies {
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.6'
 
     // ===== 외부 인프라 (External Infrastructure) =====
+    // AWS SDK: S3 (런타임 사용)
     implementation platform('software.amazon.awssdk:bom:2.29.45')
     implementation 'software.amazon.awssdk:s3'
+
+    // AWS CDK: 인프라 프로비저닝 (cdk deploy 실행용)
+    implementation 'software.amazon.awscdk:aws-cdk-lib:2.170.0'
+    implementation 'software.constructs:constructs:10.3.0'
 
     // ===== 유틸리티 (Utilities) =====
     // UUID v7 Generator
