@@ -1,6 +1,6 @@
 package kr.gravy.blind.auth.resolver;
 
-import kr.gravy.blind.auth.annotation.CurrentUser;
+import kr.gravy.blind.auth.annotation.CurrentApprovedUser;
 import kr.gravy.blind.auth.helper.AuthenticationHelper;
 import kr.gravy.blind.common.exception.BlindException;
 import kr.gravy.blind.user.entity.User;
@@ -13,19 +13,18 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
-import static kr.gravy.blind.common.exception.Status.USER_BANNED;
-import static kr.gravy.blind.common.exception.Status.USER_NOT_FOUND;
+import static kr.gravy.blind.common.exception.Status.*;
 
 @Component
 @RequiredArgsConstructor
-public class CurrentUserArgumentResolver implements HandlerMethodArgumentResolver {
+public class CurrentApprovedUserArgumentResolver implements HandlerMethodArgumentResolver {
 
     private final AuthenticationHelper authenticationHelper;
     private final UserRepository userRepository;
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.hasParameterAnnotation(CurrentUser.class)
+        return parameter.hasParameterAnnotation(CurrentApprovedUser.class)
                 && User.class.isAssignableFrom(parameter.getParameterType());
     }
 
@@ -37,9 +36,12 @@ public class CurrentUserArgumentResolver implements HandlerMethodArgumentResolve
                 USER_NOT_FOUND
         );
 
-        // 🛡️ 방어선: BANNED 사용자 즉시 차단 (User 전용 검증 로직)
         if (user.isBanned()) {
             throw new BlindException(USER_BANNED);
+        }
+
+        if (!user.hasAccessToCommunity()) {
+            throw new BlindException(COMMUNITY_ACCESS_DENIED);
         }
 
         return user;
