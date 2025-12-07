@@ -2,7 +2,9 @@ package kr.gravy.blind.admin.controller;
 
 import jakarta.validation.Valid;
 import kr.gravy.blind.admin.dto.*;
+import kr.gravy.blind.admin.entity.Admin;
 import kr.gravy.blind.admin.service.AdminService;
+import kr.gravy.blind.auth.annotation.CurrentAdmin;
 import kr.gravy.blind.auth.dto.AuthTokenDto;
 import kr.gravy.blind.auth.utils.CookieUtil;
 import kr.gravy.blind.user.model.UserStatus;
@@ -56,6 +58,7 @@ public class AdminController {
      */
     @GetMapping("/api/v1/admin/reviews")
     public ResponseEntity<ReviewListDto.Response> getReviewList(
+            @CurrentAdmin Admin admin,
             @RequestParam(defaultValue = "UNDER_REVIEW") UserStatus status
     ) {
         ReviewListDto.Response response = adminService.getReviewList(status);
@@ -67,7 +70,10 @@ public class AdminController {
      * GET /api/v1/admin/reviews/{publicId}
      */
     @GetMapping("/api/v1/admin/reviews/{publicId}")
-    public ResponseEntity<ReviewDetailDto.Response> getReviewDetail(@PathVariable UUID publicId) {
+    public ResponseEntity<ReviewDetailDto.Response> getReviewDetail(
+            @CurrentAdmin Admin admin,
+            @PathVariable UUID publicId
+    ) {
         ReviewDetailDto.Response response = adminService.getReviewDetail(publicId);
         return ResponseEntity.ok(response);
     }
@@ -78,6 +84,7 @@ public class AdminController {
      */
     @PatchMapping("/api/v1/admin/reviews/{publicId}")
     public ResponseEntity<Void> updateReviewStatus(
+            @CurrentAdmin Admin admin,
             @PathVariable UUID publicId,
             @Valid @RequestBody ReviewStatusUpdateDto.Request request
     ) {
