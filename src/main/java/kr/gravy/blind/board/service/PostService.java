@@ -52,9 +52,7 @@ public class PostService {
         UserProfile userProfile = userProfileRepository.findByUserId(user.getId())
                 .orElseThrow(() -> new BlindException(PROFILE_NOT_FOUND));
 
-        if (!request.category().canAccess(userProfile.getGender())) {
-            throw new BlindException(CATEGORY_ACCESS_DENIED);
-        }
+        request.category().validateAccess(userProfile.getGender());
 
         Post post = Post.create(
                 user.getId(),
@@ -65,20 +63,20 @@ public class PostService {
         );
         postRepository.save(post);
 
-        applicationEventPublisher.publishEvent(PostCreatedEvent.of(post));
-
-        // 5. 이미지가 있으면 Presigned URL 발급
+        CreatePostDto.PresignedUrlInfo presignedUrlInfo = null;
         if (request.imageMetadata() != null) {
-            CreatePostDto.PresignedUrlInfo presignedUrlInfo = postImageService.createPresignedUrl(
+            presignedUrlInfo = postImageService.createPresignedUrl(
                     post,
                     request.imageMetadata().filename(),
                     request.imageMetadata().contentType()
             );
-
-            return Optional.of(CreatePostDto.Response.of(post, presignedUrlInfo));
         }
 
-        return Optional.empty();
+        applicationEventPublisher.publishEvent(PostCreatedEvent.of(post));
+
+        return presignedUrlInfo != null
+                ? Optional.of(CreatePostDto.Response.of(post, presignedUrlInfo))
+                : Optional.empty();
     }
 
     @Transactional
@@ -125,9 +123,7 @@ public class PostService {
         UserProfile userProfile = userProfileRepository.findByUserId(user.getId())
                 .orElseThrow(() -> new BlindException(PROFILE_NOT_FOUND));
 
-        if (!category.canAccess(userProfile.getGender())) {
-            throw new BlindException(CATEGORY_ACCESS_DENIED);
-        }
+        category.validateAccess(userProfile.getGender());
 
         Page<Post> postPage = postRepository.findByCategoryAndStatusWithImages(
                 category,

@@ -10,7 +10,9 @@ import org.springframework.context.annotation.Configuration;
         BlindProperties.class,
         S3Properties.class,
         CorsProperties.class,
-        HmacProperties.class
+        HmacProperties.class,
+        KafkaProperties.class,
+        ElasticsearchProperties.class
 })
 public class PropertiesConfiguration {
 }

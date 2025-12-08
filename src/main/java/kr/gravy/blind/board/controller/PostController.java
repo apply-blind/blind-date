@@ -4,11 +4,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import kr.gravy.blind.auth.annotation.CurrentApprovedUser;
-import kr.gravy.blind.board.dto.CreatePostDto;
-import kr.gravy.blind.board.dto.GetDetailPostDto;
-import kr.gravy.blind.board.dto.GetListPostDto;
-import kr.gravy.blind.board.dto.TogglePostLikeDto;
+import kr.gravy.blind.board.dto.*;
 import kr.gravy.blind.board.model.PostCategory;
+import kr.gravy.blind.board.service.PostSearchService;
 import kr.gravy.blind.board.service.PostService;
 import kr.gravy.blind.user.entity.User;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +24,7 @@ import java.util.UUID;
 public class PostController {
 
     private final PostService postService;
+    private final PostSearchService postSearchService;
 
     @Operation(summary = "게시글 작성", description = "익명 게시판에 게시글을 작성합니다")
     @PostMapping("/api/v1/posts")
@@ -70,6 +69,17 @@ public class PostController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "게시글 검색", description = "Elasticsearch + Nori를 사용한 한글 형태소 분석 기반 게시글 검색 (제목 + 내용)")
+    @GetMapping("/api/v1/posts/search")
+    public ResponseEntity<PostSearchDto.PageResponse> searchPosts(
+            @RequestParam(required = true) String keyword,
+            @RequestParam(required = false) PostCategory category,
+            @CurrentApprovedUser User user,
+            @PageableDefault(size = 20) Pageable pageable
+    ) {
+        PostSearchDto.PageResponse response = postSearchService.searchPosts(keyword, category, pageable);
+        return ResponseEntity.ok(response);
+    }
 
     @Operation(summary = "게시글 삭제", description = "게시글을 삭제합니다 (작성자만 가능)")
     @DeleteMapping("/api/v1/posts/{publicId}")
