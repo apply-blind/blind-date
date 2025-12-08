@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   mysql_db:
     container_name: blind-local-db
@@ -28,6 +26,61 @@ services:
     volumes:
       - redis_data:/data
 
+  # Elasticsearch + Nori Plugin (한글 형태소 분석)
+  elasticsearch:
+    container_name: blind-local-es
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
+    restart: unless-stopped
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
+    command: bash -c "bin/elasticsearch-plugin list | grep -q analysis-nori || bin/elasticsearch-plugin install analysis-nori && /usr/local/bin/docker-entrypoint.sh"  # Nori 플러그인 자동 설치 (한글 형태소 분석, 은전한닢 프로젝트의 mecab-ko-dic 사전 사용)
+
+  # Kibana (Elasticsearch 관리 UI, Nori 테스트용)
+  kibana:
+    container_name: blind-local-kibana
+    image: docker.elastic.co/kibana/kibana:8.11.0
+    restart: unless-stopped
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
+
+  zookeeper:
+    container_name: blind-local-zookeeper
+    image: confluentinc/cp-zookeeper:7.5.0
+    restart: unless-stopped
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "2181:2181"
+
+  kafka:
+    container_name: blind-local-kafka
+    image: confluentinc/cp-kafka:7.5.0
+    restart: unless-stopped
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1  # Consumer Offset 토픽 복제 수
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1  # 트랜잭션 로그 최소 동기화 복제본 수
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1  # 트랜잭션 로그 복제 수
+    ports:
+      - "9092:9092"  # Kafka 브로커 포트 (Producer/Consumer 연결)
+
 volumes:
   mysql_db:
   redis_data:
+  es_data:

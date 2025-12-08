@@ -38,6 +38,7 @@ out/
 ### Configurations
 application-local.yml
 application-dev.yml
+application-prod.yml
 .env
 
 ### AWS CDK

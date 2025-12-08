@@ -20,6 +20,13 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     Optional<Post> findByPublicId(UUID publicId);
 
     @EntityGraph(attributePaths = {"images"})
+    Optional<Post> findWithImagesByPublicId(UUID publicId);
+
+    @EntityGraph(attributePaths = {"images"})
+    @Query("SELECT p FROM Post p WHERE p.status = :status")
+    List<Post> findAllByStatusWithImages(@Param("status") PostStatus status);
+
+    @EntityGraph(attributePaths = {"images"})
     @Query("SELECT p FROM Post p WHERE p.category = :category AND p.status IN :statuses ORDER BY p.isPinned DESC, p.createdAt DESC")
     Page<Post> findByCategoryAndStatusWithImages(
             @Param("category") PostCategory category,

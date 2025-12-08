@@ -71,6 +71,12 @@ dependencies {
     // Redis: SSE Emitter 세션 관리, Pub/Sub (실시간 알림)
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
+    // Elasticsearch: 게시글 검색, 데일리 카드 매칭
+    implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
+
+    // Kafka: DB → Elasticsearch 동기화
+    implementation 'org.springframework.kafka:spring-kafka'
+
     // ===== 인증/보안 (Authentication & Security) =====
     // JWT: Access Token/Refresh Token 생성 및 검증 (Token Rotation)
     implementation 'io.jsonwebtoken:jjwt-api:0.12.6'

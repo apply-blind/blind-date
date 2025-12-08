@@ -1,8 +1,11 @@
 package kr.gravy.blind.board.model;
 
+import kr.gravy.blind.common.exception.BlindException;
 import kr.gravy.blind.user.model.Gender;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+
+import static kr.gravy.blind.common.exception.Status.CATEGORY_ACCESS_DENIED;
 
 /**
  * 익명 게시판 카테고리
@@ -32,5 +35,17 @@ public enum PostCategory {
             case LADIES -> userGender == Gender.FEMALE;
             default -> true;  // FREE_TALK, SELF_INTRO, MEETUP = 모두 접근 가능
         };
+    }
+
+    /**
+     * 카테고리 접근 권한 검증
+     *
+     * @param userGender 사용자 성별
+     * @throws BlindException CATEGORY_ACCESS_DENIED
+     */
+    public void validateAccess(Gender userGender) {
+        if (!canAccess(userGender)) {
+            throw new BlindException(CATEGORY_ACCESS_DENIED);
+        }
     }
 }
