@@ -58,7 +58,8 @@ public class SecurityConfiguration {
                                 "/swagger-ui.html",
                                 "/v3/api-docs/**",
                                 "/api-docs/**",
-                                "/error/**"
+                                "/error/**",
+                                "/actuator/health"  // ALB Health Check
                         ).permitAll()
                         // 사용자 인증 API - HTTP Method별 권한 설정
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/tokens").permitAll()    // 로그인

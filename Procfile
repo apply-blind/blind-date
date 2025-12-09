@@ -1,0 +1,1 @@
+web: java -Dspring.profiles.active=prod -Dserver.port=5000 -jar build/libs/blind-0.0.1-SNAPSHOT.jar

@@ -22,7 +22,7 @@ public class AdminDataInitializer implements ApplicationRunner {
 
     // 초기 관리자 계정 정보
     private static final String DEFAULT_USERNAME = "jackson";
-    private static final String DEFAULT_PASSWORD = "asdfasdf";
+    private static final String DEFAULT_PASSWORD = "blinddate";
 
     @Override
     public void run(ApplicationArguments args) {

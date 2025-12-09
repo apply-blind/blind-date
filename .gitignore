@@ -72,3 +72,7 @@ Desktop.ini
 ### Markdown files
 *.md
 
+### Mock Data (Portfolio Only)
+src/main/java/kr/gravy/blind/initializer/MockDataInitializer.java
+mock_data.sql
+

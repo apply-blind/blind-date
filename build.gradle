@@ -77,6 +77,10 @@ dependencies {
     // Kafka: DB → Elasticsearch 동기화
     implementation 'org.springframework.kafka:spring-kafka'
 
+    // ===== 운영 모니터링 (Production Monitoring) =====
+    // Actuator: ALB Health Check, 운영 메트릭
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
     // ===== 인증/보안 (Authentication & Security) =====
     // JWT: Access Token/Refresh Token 생성 및 검증 (Token Rotation)
     implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
