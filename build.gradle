@@ -93,7 +93,7 @@ dependencies {
     implementation 'software.amazon.awssdk:s3'
 
     // AWS CDK: 인프라 프로비저닝 (cdk deploy 실행용)
-    implementation 'software.amazon.awscdk:aws-cdk-lib:2.170.0'
+    implementation 'software.amazon.awscdk:aws-cdk-lib:2.218.0'
     implementation 'software.constructs:constructs:10.3.0'
 
     // ===== 유틸리티 (Utilities) =====
