@@ -76,3 +76,10 @@ Desktop.ini
 src/main/java/kr/gravy/blind/initializer/MockDataInitializer.java
 mock_data.sql
 
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
+.ebextensions/https.config
+.ebextensions/vpc.config
