@@ -26,33 +26,33 @@ services:
     volumes:
       - redis_data:/data
 
-  # Elasticsearch + Nori Plugin (한글 형태소 분석)
-  elasticsearch:
-    container_name: blind-local-es
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
+  # OpenSearch + Nori Plugin (한글 형태소 분석)
+  opensearch:
+    container_name: blind-local-opensearch
+    image: opensearchproject/opensearch:2.11.0
     restart: unless-stopped
     environment:
       - discovery.type=single-node
-      - xpack.security.enabled=false
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - plugins.security.disabled=true  # 로컬 개발: 보안 비활성화
+      - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m"
     ports:
       - "9200:9200"
-      - "9300:9300"
+      - "9600:9600"  # Performance Analyzer
     volumes:
-      - es_data:/usr/share/elasticsearch/data
-    command: bash -c "bin/elasticsearch-plugin list | grep -q analysis-nori || bin/elasticsearch-plugin install analysis-nori && /usr/local/bin/docker-entrypoint.sh"  # Nori 플러그인 자동 설치 (한글 형태소 분석, 은전한닢 프로젝트의 mecab-ko-dic 사전 사용)
+      - opensearch_data:/usr/share/opensearch/data
 
-  # Kibana (Elasticsearch 관리 UI, Nori 테스트용)
-  kibana:
-    container_name: blind-local-kibana
-    image: docker.elastic.co/kibana/kibana:8.11.0
+  # OpenSearch Dashboards (관리 UI, Nori 테스트용)
+  opensearch-dashboards:
+    container_name: blind-local-opensearch-dashboards
+    image: opensearchproject/opensearch-dashboards:2.11.0
     restart: unless-stopped
     environment:
-      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - OPENSEARCH_HOSTS=http://opensearch:9200
+      - DISABLE_SECURITY_DASHBOARDS_PLUGIN=true
     ports:
       - "5601:5601"
     depends_on:
-      - elasticsearch
+      - opensearch
 
   zookeeper:
     container_name: blind-local-zookeeper
@@ -83,4 +83,4 @@ services:
 volumes:
   mysql_db:
   redis_data:
-  es_data:
+  opensearch_data:
