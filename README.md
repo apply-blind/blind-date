@@ -16,22 +16,6 @@
 
 ### 1. SSE + Redis 실시간 알림 (브로드캐스트 + 유니캐스트)
 
-#### Pipeline
-
-```mermaid
-flowchart LR
-    A[사용자 A 게시글 좋아요] --> B[PostService]
-    B --> C[MySQL 저장]
-    B --> D[Redis Pub/Sub 발행]
-    D --> E[NotificationListener 구독]
-    E --> F{userPublicId?}
-    F -->|null 브로드캐스트| G[모든 연결된 사용자]
-    F -->|특정 사용자 유니캐스트| H[사용자 B만]
-
-    style B fill:#6DB33F,color:#fff
-    style C fill:#4479A1,color:#fff
-    style D fill:#DC382D,color:#fff
-```
 
 #### 구현 코드
 
@@ -98,24 +82,6 @@ public void send(UUID userPublicId, NotificationDto notification) {
 
 **해결**: RFC 7009 Token Rotation + 비관적 락으로 Race Condition 완전 차단
 
-#### Pipeline
-
-```mermaid
-flowchart LR
-    A[클라이언트 Refresh Token 전송] --> B[AuthService JWT 서명 검증]
-    B --> C[DB 조회 비관적 락]
-    C --> D{Token Status?}
-    D -->|ACTIVE| E[즉시 REVOKED 변경]
-    D -->|REVOKED| F[401 Unauthorized 재사용 차단]
-    E --> G[새 Access Token 생성 1시간]
-    G --> H[새 Refresh Token 생성 7일]
-    H --> I[200 OK 새 토큰 쌍 반환]
-
-    style C fill:#4479A1,color:#fff
-    style E fill:#FFE6E6
-    style F fill:#FFE6E6
-    style I fill:#E6F3FF
-```
 
 #### 구현 코드
 
@@ -179,29 +145,7 @@ Thread 2: SELECT FOR UPDATE → 대기 → 조회 결과 없음 (이미 REVOKED)
 
 **해결**: Event-Driven 아키텍처로 MySQL(Write) + OpenSearch(Read) 분리, Kafka DLQ로 실패 처리
 
-#### Pipeline
 
-```mermaid
-flowchart LR
-    subgraph Write[Write Path 비동기]
-        A[게시글 작성] --> B[MySQL 저장]
-        B --> C[Kafka 발행]
-        C --> D{인덱싱 성공?}
-        D -->|성공| E[OpenSearch 인덱싱 Nori]
-        D -->|3회 재시도 실패| F[DLT 토픽 이동]
-    end
-
-    subgraph Read[Read Path 검색]
-        G[검색 요청] --> H[OpenSearch 조회]
-        H --> I[관련도 순 결과]
-    end
-
-    style B fill:#4479A1,color:#fff
-    style C fill:#231F20,color:#fff
-    style E fill:#005EB8,color:#fff
-    style F fill:#FFE6E6
-    style H fill:#005EB8,color:#fff
-```
 
 #### 구현 코드
 
@@ -285,21 +229,6 @@ public DefaultErrorHandler errorHandler(KafkaTemplate<String, Object> kafkaTempl
 
 **해결**: 3단계 플로우로 클라이언트 → S3 직접 업로드
 
-#### Pipeline
-
-```mermaid
-flowchart LR
-    A[클라이언트 이미지 선택] --> B[백엔드 Presigned URL 발급 요청]
-    B --> C[S3Client generatePresignedUrl 24시간 만료]
-    C --> D[Presigned URL 반환]
-    D --> E[클라이언트 S3 직접 업로드 PUT]
-    E --> F[업로드 완료 알림]
-    F --> G[백엔드 S3 키 저장]
-
-    style B fill:#6DB33F,color:#fff
-    style C fill:#FF9900,color:#fff
-    style E fill:#FF9900,color:#fff
-```
 
 #### 구현 코드
 
@@ -357,19 +286,6 @@ public ProfileUpdateDto.Response submitProfileUpdateRequest(User user, ProfileUp
 
 **해결**: CloudFront + Lambda Function URL로 동적 리사이징 (200/800/1920px)
 
-#### Pipeline
-
-```mermaid
-flowchart LR
-    A[사용자 이미지 요청 ?width=200] --> B[CloudFront 엣지]
-    B --> C{캐시 존재?}
-    C -->|Hit| D[캐시된 이미지 반환]
-    C -->|Miss| E[Lambda Function URL]
-    E --> F[S3 원본 다운로드]
-    F --> G[Sharp 리사이징 WebP]
-    G --> H[CloudFront 캐싱 24시간]
-    H --> D
-```
 
 #### 구현 코드
 
@@ -439,18 +355,6 @@ public enum ImageSize {
 
 **해결**: 카카오 소셜 로그인 + Pending 아키텍처로 심사 중 수정 지원
 
-#### Pipeline
-
-```mermaid
-flowchart LR
-    A[카카오 로그인 OAuth2] --> B[프로필 작성 PROFILE_WRITING]
-    B --> C[프로필 제출 S3 Presigned URL]
-    C --> D[심사 대기 UNDER_REVIEW UserProfilePending]
-    D --> E{관리자 심사}
-    E -->|승인| F[APPROVED 게시판 접근 가능]
-    E -->|반려| G[REJECTED NEW 이미지 S3 삭제]
-    G --> B
-```
 
 #### 구현 코드
 
