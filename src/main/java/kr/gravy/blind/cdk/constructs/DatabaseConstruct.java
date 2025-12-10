@@ -27,7 +27,7 @@ public class DatabaseConstruct extends Construct {
 
         // 1. VPC 생성
         this.vpc = Vpc.Builder.create(this, "BlindVpc")
-                .maxAzs(1)
+                .maxAzs(2)
                 .natGateways(0)
                 .subnetConfiguration(List.of(
                         SubnetConfiguration.builder()
