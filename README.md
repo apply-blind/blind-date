@@ -756,9 +756,10 @@ public DefaultErrorHandler errorHandler(KafkaTemplate<String, Object> kafkaTempl
 - Spatial Data Types (위치 기반 매칭)
 - 취업 시장 수요 (Redis는 캐싱/세션용)
 
-### OpenSearch vs Elasticsearch
-- OpenSearch 선택: AWS 관리형 서비스, Nori 플러그인 공식 지원
-- Elasticsearch 대비 30% 저렴
+### 검색 엔진 선택
+- **로컬 개발**: Elasticsearch 8.11 (docker-compose, 개발 편의성)
+- **AWS 프로덕션**: OpenSearch 2.18 (AWS 관리형)
+- 공통: Nori 형태소 분석기 지원
 
 ### SSE vs WebSocket
 - SSE 선택: 단방향 통신만 필요, HTTP/1.1 호환, 경량
