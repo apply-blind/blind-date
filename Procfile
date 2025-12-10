@@ -1,1 +1,1 @@
-web: java -Dspring.profiles.active=prod -Dserver.port=5000 -jar build/libs/blind-0.0.1-SNAPSHOT.jar
+web: bash -c 'source /etc/environment && java -Xms1024m -Xmx1536m -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/var/log/heap-dump.hprof -Xlog:gc*:file=/var/log/gc.log:time,uptime:filecount=5,filesize=10M -Dspring.profiles.active=prod -Dserver.port=5000 -jar build/libs/blind-0.0.1-SNAPSHOT.jar'
