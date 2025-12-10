@@ -71,10 +71,15 @@ dependencies {
     // Redis: SSE Emitter 세션 관리, Pub/Sub (실시간 알림)
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
-    // Elasticsearch: 게시글 검색, 데일리 카드 매칭
-    implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
+    // OpenSearch: AWS OpenSearch Service 공식 클라이언트 (라이선스 체크 없음)
+    implementation 'org.springframework.data:spring-data-elasticsearch:5.5.6'  // OpenSearch도 지원
+    implementation 'org.opensearch.client:opensearch-java:2.18.0'  // AWS 공식 권장
+    implementation 'org.apache.httpcomponents.core5:httpcore5:5.2.4'  // OpenSearch HTTP 통신
 
-    // Kafka: DB → Elasticsearch 동기화
+    // AWS SDK: OpenSearch IAM 인증 (SigV4 자동 처리)
+    implementation 'software.amazon.awssdk:auth'
+
+    // Kafka: DB → OpenSearch 비동기 동기화
     implementation 'org.springframework.kafka:spring-kafka'
 
     // ===== 운영 모니터링 (Production Monitoring) =====
@@ -88,9 +93,10 @@ dependencies {
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.6'
 
     // ===== 외부 인프라 (External Infrastructure) =====
-    // AWS SDK: S3 (런타임 사용)
+    // AWS SDK: S3 (런타임 사용), OpenSearch IAM 인증
     implementation platform('software.amazon.awssdk:bom:2.29.45')
     implementation 'software.amazon.awssdk:s3'
+    implementation 'software.amazon.awssdk:aws-crt-client'  // AwsSdk2Transport용 HTTP 클라이언트
 
     // AWS CDK: 인프라 프로비저닝 (cdk deploy 실행용)
     implementation 'software.amazon.awscdk:aws-cdk-lib:2.218.0'

@@ -31,20 +31,24 @@ public class LocalOpenSearchConfig {
 
     @Bean
     public OpenSearchClient openSearchClient() {
-        String uri = elasticsearchProperties.uris();
-        log.info("Local OpenSearch Endpoint: {}", uri);
+        try {
+            String uri = elasticsearchProperties.uris();
+            log.info("Local OpenSearch Endpoint: {}", uri);
 
-        // HttpHost 파싱
-        HttpHost host = HttpHost.create(uri);
+            // HttpHost 파싱
+            HttpHost host = HttpHost.create(uri);
 
-        // ApacheHttpClient5Transport: 기본 HTTP 클라이언트 (인증 없음)
-        var transport = ApacheHttpClient5TransportBuilder
-                .builder(host)
-                .build();
+            // ApacheHttpClient5Transport: 기본 HTTP 클라이언트 (인증 없음)
+            var transport = ApacheHttpClient5TransportBuilder
+                    .builder(host)
+                    .build();
 
-        OpenSearchClient client = new OpenSearchClient(transport);
+            OpenSearchClient client = new OpenSearchClient(transport);
 
-        log.info("✅ OpenSearchClient initialized for local environment");
-        return client;
+            log.info("✅ OpenSearchClient initialized for local environment");
+            return client;
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to initialize OpenSearchClient", e);
+        }
     }
 }
