@@ -24,15 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.util.List;
 
-/**
- * 게시글 검색 서비스 (OpenSearch Native Client 사용)
- *
- * 변경 이력:
- * - 2025-12-10: Spring Data Elasticsearch → OpenSearch Java Client
- * - 2025-12-10: ElasticsearchOperations → OpenSearchClient
- * - 2025-12-10: co.elastic.clients.* → org.opensearch.client.*
- * - 2025-12-11: 커스텀 예외 추가, 필드명 상수화, NPE 방어
- */
 @Slf4j
 @Service
 @RequiredArgsConstructor

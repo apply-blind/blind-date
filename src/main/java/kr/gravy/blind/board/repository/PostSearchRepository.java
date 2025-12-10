@@ -8,8 +8,8 @@ import org.opensearch.client.opensearch.OpenSearchClient;
 import org.opensearch.client.opensearch._types.Refresh;
 import org.opensearch.client.opensearch.core.BulkRequest;
 import org.opensearch.client.opensearch.core.BulkResponse;
-import org.opensearch.client.opensearch.core.IndexRequest;
 import org.opensearch.client.opensearch.core.DeleteRequest;
+import org.opensearch.client.opensearch.core.IndexRequest;
 import org.opensearch.client.opensearch.core.bulk.BulkOperation;
 import org.opensearch.client.opensearch.core.bulk.BulkResponseItem;
 import org.springframework.stereotype.Repository;
@@ -17,14 +17,6 @@ import org.springframework.stereotype.Repository;
 import java.io.IOException;
 import java.util.List;
 
-/**
- * PostDocument OpenSearch Repository (Native Client 사용)
- *
- * 변경 이력:
- * - 2025-12-10: ElasticsearchRepository → OpenSearchClient 직접 사용
- * - 2025-12-10: Spring Data 자동 구현 → 수동 구현
- * - 2025-12-11: 커스텀 예외 추가, Bulk 실패 로깅 개선
- */
 @Slf4j
 @Repository
 @RequiredArgsConstructor

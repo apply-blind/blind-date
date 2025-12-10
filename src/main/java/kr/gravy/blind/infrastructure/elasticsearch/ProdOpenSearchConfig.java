@@ -22,21 +22,6 @@ import software.amazon.awssdk.regions.Region;
 
 import static kr.gravy.blind.common.exception.Status.INTERNAL_SERVER_ERROR;
 
-/**
- * 프로덕션 환경 OpenSearch Configuration (AWS OpenSearch VPC 도메인)
- *
- * 설정:
- * - AWS OpenSearch Service 2.11 (IAM 인증)
- * - AwsSdk2Transport (AWS SigV4 서명 자동 추가)
- * - VPC + Security Group + IAM 3단계 보안
- * - AwsCrtHttpClient (GET/DELETE body 지원)
- *
- * 변경 이력:
- * - 2025-12-10: Elasticsearch Client → OpenSearch Client (라이선스 체크 회피)
- * - 2025-12-10: 수동 SigV4 구현 → AwsSdk2Transport (자동 처리)
- * - 2025-12-10: Apache HttpClient → AwsCrtHttpClient (body 지원)
- * - 2025-12-11: ElasticsearchProperties.pool() 설정 반영, 로그 레벨 개선
- */
 @Slf4j
 @Configuration
 @Profile("prod")
@@ -51,14 +36,6 @@ public class ProdOpenSearchConfig {
     @Value("${aws.s3.region}")
     private String awsRegion;
 
-    /**
-     * AWS OpenSearch용 OpenSearchClient (AwsSdk2Transport 사용)
-     *
-     * IAM 인증 흐름:
-     * 1. AwsSdk2Transport가 DefaultCredentialsProvider로 EC2 IAM Role 자격증명 획득
-     * 2. 모든 HTTP 요청에 AWS SigV4 서명 자동 추가 (요청 본문 포함)
-     * 3. OpenSearch 도메인이 IAM 인증 확인 후 접근 허용
-     */
     @Bean
     public OpenSearchClient openSearchClient() {
         try {

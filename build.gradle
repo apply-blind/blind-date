@@ -68,13 +68,13 @@ dependencies {
     implementation 'org.flywaydb:flyway-mysql'
 
     // ===== 데이터베이스 - NoSQL (Database - NoSQL) =====
-    // Redis: SSE Emitter 세션 관리, Pub/Sub (실시간 알림)
+    // Redis: SSE Emitter & Pub/Sub
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
-    // OpenSearch: AWS OpenSearch Service 공식 클라이언트 (라이선스 체크 없음)
-    implementation 'org.springframework.data:spring-data-elasticsearch:5.5.6'  // PostDocument 어노테이션용 (@Document, @Field 등)
-    implementation 'org.opensearch.client:opensearch-java:2.18.0'  // AWS 공식 권장
-    implementation 'org.apache.httpcomponents.core5:httpcore5'  // LocalOpenSearchConfig용 (HttpHost), opensearch-java가 전이적으로 제공하지만 명시적 선언
+    // OpenSearch: AWS OpenSearch Service 공식 클라이언트
+    implementation 'org.springframework.data:spring-data-elasticsearch:5.5.6'
+    implementation 'org.opensearch.client:opensearch-java:2.18.0'
+    implementation 'org.apache.httpcomponents.core5:httpcore5'
 
     // AWS SDK: OpenSearch IAM 인증 (SigV4 자동 처리)
     implementation 'software.amazon.awssdk:auth'
